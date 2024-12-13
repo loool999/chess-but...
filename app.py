@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import chess
 import os
 from chess_engine import ChessEngine
+import tensorflow as tf
 
 app = Flask(__name__)
 model_dir = "chess_models"

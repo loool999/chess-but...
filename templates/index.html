@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Chess AI</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboardjs/1.0.0/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="static\css\chessboard-1.0.0.min.css">
     <style>
         #progress-container {
             width: 300px;
@@ -25,8 +25,8 @@
         <div id="progress-bar"></div>
     </div>
     <p id="message"></p>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboardjs/1.0.0/chessboard-1.0.0.min.js"></script>
+    <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="static\chessboard-1.0.0.min.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script>
         var board = Chessboard('board', {
