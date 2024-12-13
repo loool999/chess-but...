@@ -36,6 +36,18 @@ class ChessEngine:
             score -= len(self.board.pieces(piece_type, chess.BLACK)) * material_value[piece_type]
         return score
 
+    def order_moves(self, moves):
+        def move_value(move):
+            value = 0
+            if self.board.is_capture(move):
+                value += 10
+            if self.board.gives_check(move):
+                value += 5
+            if move.promotion:
+                value += 8
+            return value
+        return sorted(moves, key=move_value, reverse=True)
+
     def minimax(self, depth, alpha, beta, maximizing_player, model=None, progress_bar=None):
         if depth == 0 or self.board.is_game_over():
             if model:
@@ -48,7 +60,8 @@ class ChessEngine:
         
         if maximizing_player:
             max_eval = float('-inf')
-            for move in self.generate_moves():
+            moves = self.order_moves(self.generate_moves())
+            for move in moves:
                 self.make_move(move)
                 eval = self.minimax(depth - 1, alpha, beta, False, model, progress_bar)
                 self.undo_move()
@@ -59,7 +72,8 @@ class ChessEngine:
             return max_eval
         else:
             min_eval = float('inf')
-            for move in self.generate_moves():
+            moves = self.order_moves(self.generate_moves())
+            for move in moves:
                 self.make_move(move)
                 eval = self.minimax(depth - 1, alpha, beta, True, model, progress_bar)
                 self.undo_move()
@@ -70,17 +84,25 @@ class ChessEngine:
             return min_eval
     
     def find_best_move(self, depth, model=None):
-        total_predictions = self.count_predictions(depth)
-        with tqdm(total=total_predictions, desc="AI Thinking") as progress_bar:
-            best_eval = float('-inf')
-            best_move = None
-            for move in self.generate_moves():
-                self.make_move(move)
-                eval = self.minimax(depth - 1, float('-inf'), float('inf'), False, model, progress_bar)
-                self.undo_move()
-                if eval > best_eval:
-                    best_eval = eval
-                    best_move = move
+        best_move = None
+        best_eval = float('-inf')
+        
+        for current_depth in range(1, depth + 1):
+            total_predictions = self.count_predictions(current_depth)
+            with tqdm(total=total_predictions, desc=f"AI Thinking (Depth {current_depth})") as progress_bar:
+                best_move_current_depth = None
+                best_eval_current_depth = float('-inf')
+                moves = self.order_moves(self.generate_moves())
+                for move in moves:
+                    self.make_move(move)
+                    eval = self.minimax(current_depth - 1, float('-inf'), float('inf'), False, model, progress_bar)
+                    self.undo_move()
+                    if eval > best_eval_current_depth:
+                        best_eval_current_depth = eval
+                        best_move_current_depth = move
+                if best_move_current_depth:
+                    best_move = best_move_current_depth
+                    best_eval = best_eval_current_depth
         return best_move
 
     def count_predictions(self, depth):
