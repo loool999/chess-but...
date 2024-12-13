@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import chess
 import os
-from chess_engine import ChessEngine
+from run import ChessEngine
 import tensorflow as tf
 
 app = Flask(__name__)
@@ -40,18 +40,15 @@ def ai_move():
     if model is None:
         return jsonify({"error": "Model not loaded"})
     
-    progress_updates = engine.find_best_move(3, model)
+    ai_move = engine.find_best_move(1, model)
     
-    for progress, total in progress_updates:
-        if engine.best_move:
-            engine.make_move(engine.best_move)
-            if engine.board.is_game_over():
-                return jsonify({"board": engine.board.fen(), "game_over": True, "result": engine.board.result(), "progress": progress, "total": total})
-            return jsonify({"board": engine.board.fen(), "game_over": False, "progress": progress, "total": total, "ai_move": engine.best_move.uci()})
-        else:
-            return jsonify({"progress": progress, "total": total})
-    
-    return jsonify({"error": "AI has no legal moves"})
+    if ai_move:
+        engine.make_move(ai_move)
+        if engine.board.is_game_over():
+            return jsonify({"board": engine.board.fen(), "game_over": True, "result": engine.board.result(), "ai_move": ai_move.uci()})
+        return jsonify({"board": engine.board.fen(), "game_over": False, "ai_move": ai_move.uci()})
+    else:
+        return jsonify({"error": "AI has no legal moves"})
 
 if __name__ == "__main__":
     app.run(debug=True)

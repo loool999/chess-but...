@@ -4,17 +4,53 @@
     <title>Chess AI</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='chessboard-1.0.0.min.css') }}">
     <style>
-        #progress-container {
-            width: 300px;
-            height: 20px;
-            background-color: #ddd;
-            margin-top: 10px;
-            display: none;
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50; /* Darker heading color */
+        }
+
+        #board {
+            width: 400px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #progress-container {
+            width: 400px; /* Match board width */
+            height: 10px; /* Slimmer progress bar */
+            background-color: #e0e0e0;
+            margin-top: 10px;
+            border-radius: 5px; /* Rounded corners */
+            display: none;
+            overflow: hidden; /* Prevent progress bar from overflowing rounded corners */
+        }
+
         #progress-bar {
             height: 100%;
-            background-color: green;
+            background-color: #27ae60; /* Green progress bar */
             width: 0%;
+            transition: width 0.3s ease; /* Smooth transition */
+            border-radius: 5px;
+        }
+
+        #message {
+            margin-top: 15px;
+            text-align: center;
+            font-style: italic;
+            color: #777;
         }
     </style>
 </head>

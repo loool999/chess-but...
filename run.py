@@ -89,20 +89,23 @@ class ChessEngine:
         
         for current_depth in range(1, depth + 1):
             total_predictions = self.count_predictions(current_depth)
-            with tqdm(total=total_predictions, desc=f"AI Thinking (Depth {current_depth})") as progress_bar:
+            with tqdm(total=total_predictions, desc=f"AI Thinking (Depth {current_depth})", unit="pred") as progress_bar:
                 best_move_current_depth = None
                 best_eval_current_depth = float('-inf')
                 moves = self.order_moves(self.generate_moves())
-                for move in moves:
+                
+                for move_index, move in enumerate(moves):
                     self.make_move(move)
                     eval = self.minimax(current_depth - 1, float('-inf'), float('inf'), False, model, progress_bar)
                     self.undo_move()
                     if eval > best_eval_current_depth:
                         best_eval_current_depth = eval
                         best_move_current_depth = move
+                
                 if best_move_current_depth:
                     best_move = best_move_current_depth
                     best_eval = best_eval_current_depth
+        
         return best_move
 
     def count_predictions(self, depth):
@@ -166,15 +169,15 @@ def play_game(model_path, depth=3):
     print(engine.board)
     result = engine.board.result()
     if result == '1-0':
-        print("White wins!")
+           print("White wins!")
     elif result == '0-1':
-        print("Black wins!")
+           print("Black wins!")
     else:
-        print("It's a draw!")
+           print("It's a draw!")
 
-# --- Main Execution ---
-if __name__ == "__main__":
-    model_dir = "chess_models"
-    model_path = os.path.join(model_dir, "chess_model.keras")
-    
-    play_game(model_path, depth=3)
+   # --- Main Execution ---
+    if __name__ == "__main__":
+       model_dir = "chess_models"
+       model_path = os.path.join(model_dir, "chess_model.keras")
+       
+       play_game(model_path, depth=1)
